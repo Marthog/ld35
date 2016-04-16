@@ -17,12 +17,15 @@ someFunc :: IO ()
 someFunc = do
     let window = InWindow "Ludum Dare 35" (windowWidthI, windowHeightI) (100, 100)
     let game = newGame windowWidthI windowHeightI
-    playIO window white 60 game (return.render) input update
-    return ()
+    play window white 60 game drawGame (execState . input) (execState . updateGame)
 
-{-
-input :: Event -> Game -> IO Game
+
+input :: Event -> State Game ()
+--input (EventResize s) = resize s -- game{view=resize s (view game)}
+
+
 -- special key for logging position (useful for tutorial levels)
+{-
 input (EventKey (SpecialKey KeySpace) Up _ _)   game@Game{..} = do
     print $ printInt x ++ ", " ++ printInt y
     return game
@@ -40,9 +43,7 @@ input (EventKey (SpecialKey key) Up _ _) game@GameOver{..} =
 input event game = return $ game
 -}
 
-input event = return 
-
-update time = return
+input event = return ()
 
 printInt :: Float -> String
 printInt a = show (round a)
@@ -52,7 +53,4 @@ downButtons = [SpecialKey KeyDown]
 
 
 keyPress key state game = game
-
--- render :: Game -> Picture
-render _ = pictures []
 

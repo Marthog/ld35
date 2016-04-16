@@ -11,6 +11,7 @@ module Draw (
     , ellipse
     , transform
     , combine
+    , color
 ) where
 
 import ClassyPrelude
@@ -19,12 +20,13 @@ import Graphics.Gloss(Picture(..))
 import Math
 
 translate = uncurry G.translate . toTuple
-rotate = G.rotate
+rotate = G.rotate . radToDeg
 scale = G.scale
 
 circle = G.circleSolid
 unitCircle = G.circleSolid 1
 ellipse w h = scale w h unitCircle
+color = G.color
 
 combine :: (MonoFoldable t, Element t ~ Picture) => t -> Picture
 combine = G.pictures . toList

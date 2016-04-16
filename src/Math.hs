@@ -14,9 +14,11 @@ module Math (
     , toTuple
     , rotateToUnit
     , degToRad, radToDeg
+    , angleBetween
 ) where
 
 import ClassyPrelude
+import Safe(fromJustDef)
 import Foreign
 
 
@@ -77,7 +79,7 @@ toTuple :: Vec2 -> (Float, Float)
 toTuple (Vec2 a b) = (a,b)
 
 rotateToUnit :: Float -> Vec2
-rotateToUnit r = Vec2 (cos r) (sin r)
+rotateToUnit r = Vec2 (cos r) (-sin r)
 
 data Vec2 = Vec2 !Float !Float
     deriving (Show, Eq)
@@ -88,6 +90,10 @@ instance VecN Vec2 where
     vZip f (Vec2 x0 y0) (Vec2 x1 y1) = Vec2 (f x0 x1) (f y0 y1)
     vFold f (Vec2 x y) = f x y
 
-
 radToDeg x = x * 180 / pi
 degToRad x = x * pi / 180
+
+angleBetween :: Vec2 -> Vec2 -> Float
+angleBetween a b = fromJustDef 0 (calc <$> normalize a <*> normalize b)
+    where calc v0 v1 = acos $ dot v0 v1
+

@@ -35,6 +35,8 @@ library
                        , either
                        , gloss==1.10.*
                        , lens
+                       , random
+                       , MonadRandom
   default-extensions:  NoImplicitPrelude
                     , OverloadedStrings
                     , BangPatterns
