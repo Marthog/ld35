@@ -7,7 +7,7 @@ module Lib
 
 
 import ClassyPrelude
-import CommandLine
+import Graphics.Gloss
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
