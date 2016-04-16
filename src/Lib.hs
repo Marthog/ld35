@@ -8,18 +8,17 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Data.Point
 import Control.Monad.State
+import Game
 
 windowWidthI = 800              :: Int
 windowHeightI = 600             :: Int
 
-data Game = Game
-
+someFunc :: IO ()
 someFunc = do
     let window = InWindow "Ludum Dare 35" (windowWidthI, windowHeightI) (100, 100)
     let game = newGame windowWidthI windowHeightI
     playIO window white 60 game (return.render) input update
-
-newGame _ _ = Game
+    return ()
 
 {-
 input :: Event -> Game -> IO Game
@@ -41,7 +40,7 @@ input (EventKey (SpecialKey key) Up _ _) game@GameOver{..} =
 input event game = return $ game
 -}
 
-input event game = return game
+input event = return 
 
 update time = return
 
@@ -54,6 +53,6 @@ downButtons = [SpecialKey KeyDown]
 
 keyPress key state game = game
 
-render :: Game -> Picture
+-- render :: Game -> Picture
 render _ = pictures []
 
