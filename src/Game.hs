@@ -67,7 +67,7 @@ registerKey key state' = do
         SpecialKey KeyUp        -> ctrl . move .= btof state
         SpecialKey KeyLeft      -> btn . leftPressed .= state
         SpecialKey KeyRight     -> btn . rightPressed .= state
-        SpecialKey KeySpace     -> ctrl . attack .= not state
+        SpecialKey KeySpace     -> ctrl . attack .= btof (not state)
         _                       -> return ()
 
     b <- use buttonState
@@ -75,7 +75,7 @@ registerKey key state' = do
 
     where
         btn = buttonState
-        ctrl = world . units . _head . ai
+        ctrl = world . player . ai
         state = keyPressed state'
 
 defaultButtonState = ButtonState {

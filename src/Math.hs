@@ -94,6 +94,5 @@ radToDeg x = x * 180 / pi
 degToRad x = x * pi / 180
 
 angleBetween :: Vec2 -> Vec2 -> Float
-angleBetween a b = fromJustDef 0 (calc <$> normalize a <*> normalize b)
-    where calc v0 v1 = acos $ dot v0 v1
+angleBetween (Vec2 x0 y0) (Vec2 x1 y1) = atan2 (x1-x0) (y1-y0)
 
