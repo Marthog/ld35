@@ -42,8 +42,7 @@ newGame width height = Game{
             , _buttonState=defaultButtonState
             }
     where
-        world = execState (do
-            addPlayer
+        world = execState (
             replicateM_ 10 addRandom 
             ) emptyWorld
 

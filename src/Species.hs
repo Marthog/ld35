@@ -9,7 +9,6 @@ module Species (
     , speed, slength, width, position, health
     , rotation, Species.color
     , runAI
-    , mass
     , turn, move, attack
     , ai
     , worldSize
@@ -46,14 +45,25 @@ data Unit = Unit {
     , _health       :: !Float
     , _food         :: !Float
     , _ai        :: !AI
-    , _dna       :: !(Vector Float)
     }
     deriving (Show)
 
 makeLenses ''Unit
 
+
+dna :: Unit -> Vector Float
+dna Unit{..} = [
+    _speed
+    , _health
+    , _slength
+    , _width
+    , _health
+    , _slength
+    , _width
+    ]
+
 instance Drawable Unit where
-    draw Unit{..} = Draw.transform _position _rotation $ Draw.color _color $ ellipse _slength _width
+    draw Unit{..} = Draw.transform _position _rotation $ Draw.color _color $ ellipse (10*_slength) (5*_width)
 
 updateUnit :: Float -> State Unit ()
 updateUnit time = do
@@ -92,13 +102,8 @@ defaultUnit = Unit {
         , _move = 0
         , _attack = 0
         }
-    , _dna = replicate 10 0
     }
 
-
-
-mass :: Unit -> Float
-mass Unit{..} = _health + 0.5*_food + 5
 
 distance :: Unit -> Unit -> Float
 distance a b = vLength $ _position a |-| _position b
@@ -116,11 +121,11 @@ eat f =
     food += f
 
 dnaDistance :: Unit -> Unit -> Float
-dnaDistance a b = sum $ zipWith ((-) `on` abs) (_dna a) (_dna b)
+dnaDistance a b = sum $ map abs $ zipWith (-) (dna a) (dna b)
 
 attackOthers :: Unit -> State (Vector Unit) ()
 attackOthers attacker = modify $ map $ \unit ->
-    if distance attacker unit < 10 && dnaDistance unit attacker>10 then
+    if distance attacker unit < 20 && dnaDistance unit attacker>1 then
         unit { _health = _health unit - _health attacker }
     else
         unit
