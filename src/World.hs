@@ -10,6 +10,8 @@ module World (
     , addRandom
     , updateWorld
     , addPlayer
+    , units
+    --, player
 ) where
 
 import ClassyPrelude hiding (snoc)
@@ -21,6 +23,7 @@ import Control.Monad.State(runState,gets, State, state)
 import System.Random
 import Graphics.Gloss.Data.Color
 import Data.Vector((!))
+import Input
 
 data Rectangle = Rectangle !Vec2 !Vec2
     deriving (Show)
@@ -57,7 +60,9 @@ data World = World {
 makeLenses ''World
 
 
-player = units . _head
+--player :: Lens _ _ _ _
+--player :: Functor f => (Unit -> f0 Unit) -> World -> f0 World
+--player = units . _head
 
 emptyWorld = World {
     _units = empty
@@ -71,12 +76,12 @@ drawWorld World{..} = combine
     ++ map draw _units
     )
 
-updateWorld :: Float -> State World ()
-updateWorld time = do
-    player . rotation += (pi * time)
+updateWorld :: Float -> ButtonState -> State World ()
+updateWorld time btnstate = do
+    -- player . rotation += (pi * time)
     allUnits <- gets _units
     units . _tail . each & zoom $ runAI time allUnits
-    units . each %= updateUnit time
+    zoom (units.each) (updateUnit time)
     updateAllUnits
 
 updateAllUnits :: State World ()
@@ -97,6 +102,7 @@ spawnParticles pos n = particles %= (++ part)
     where part = [
                 Particle{position=pos, ptype=Food n}
             ]
+
 
 
 randR :: Random a => a -> a -> State World a

@@ -8,6 +8,9 @@ module Species (
     , rotation, Species.color
     , runAI
     , mass
+    , AI
+    , turn, move, attack
+    , ai
 ) where
 
 import ClassyPrelude
@@ -19,6 +22,14 @@ import Control.Monad.Random
 import Control.Monad.State
 import Safe(fromJustDef)
 
+data AI = AI {
+    _turn   :: !Float
+    , _move   :: !Float
+    , _attack :: !Bool
+}
+    deriving (Show)
+
+makeLenses ''AI
 
 data Unit = Unit {
     _speed       :: !Float
@@ -30,6 +41,7 @@ data Unit = Unit {
     , _damage       :: !Float
     , _health       :: !Float
     , _food         :: !Float
+    , _ai        :: !AI
     }
     deriving (Show)
 
@@ -38,11 +50,18 @@ makeLenses ''Unit
 instance Drawable Unit where
     draw Unit{..} = Draw.transform _position _rotation $ Draw.color _color $ ellipse _slength _width
 
-updateUnit :: Float -> Unit -> Unit
-updateUnit time u@Unit{..} = set position newpos u
-    where
-        newpos = _position |+| _speed *| rotateToUnit _rotation
+updateUnit :: Float -> State Unit ()
+updateUnit time = do
+    t <- use $ ai.turn
+    rot <- rotation <+= t * time * turnSpeed
+    pos <- use position
+    sp <- use speed
+    mv <- use $ ai.move
+    let newpos = pos |+| (sp * mv) *| rotateToUnit rot
+    position .= newpos
 
+
+turnSpeed = 2.0
 
 defaultUnit = Unit {
     _speed = 1.0
@@ -54,6 +73,11 @@ defaultUnit = Unit {
     , _damage = 4
     , _health = 10
     , _food = 50
+    , _ai = AI {
+        _turn = 0
+        , _move = 0
+        , _attack = False
+        }
     }
 
 
@@ -77,8 +101,8 @@ eat :: Float -> State Unit ()
 eat f = 
     food += f
 
-attack :: Unit -> State Unit ()
-attack attacker = do
+attackOther :: Unit -> State Unit ()
+attackOther attacker = do
     newhealth <- health <-= _damage attacker    
     when (newhealth <= 0) $ 
        return () 

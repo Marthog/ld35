@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Lib
     ( someFunc
     ) where
@@ -9,6 +11,8 @@ import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Data.Point
 import Control.Monad.State
 import Game
+import Input
+import Control.Lens
 
 windowWidthI = 800              :: Int
 windowHeightI = 600             :: Int
@@ -22,6 +26,7 @@ someFunc = do
 
 input :: Event -> State Game ()
 --input (EventResize s) = resize s -- game{view=resize s (view game)}
+input (EventKey key state _ _) = registerKey key state
 
 
 -- special key for logging position (useful for tutorial levels)

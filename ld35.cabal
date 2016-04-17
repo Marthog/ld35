@@ -20,6 +20,7 @@ library
                     , Draw
                     , Math
                     , Species
+                    , Input
                     , World
   build-depends:       base >= 4.7 && < 5
                        , vector
